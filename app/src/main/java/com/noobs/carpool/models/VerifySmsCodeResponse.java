@@ -28,4 +28,9 @@ public class VerifySmsCodeResponse {
     public void setErrorText(String error_text) {
         this.error_text = error_text;
     }
+
+    @Override
+    public String toString(){
+        return status + ", " + error_text;
+    }
 }

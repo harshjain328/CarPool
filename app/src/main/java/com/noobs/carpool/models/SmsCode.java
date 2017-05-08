@@ -10,4 +10,9 @@ public class SmsCode {
     public SmsCode(long number){
         this.number = number;
     }
+
+    @Override
+    public String toString(){
+        return number+"";
+    }
 }

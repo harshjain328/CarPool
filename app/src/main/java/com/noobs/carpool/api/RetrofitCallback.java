@@ -31,17 +31,22 @@ public  class RetrofitCallback<T> implements Callback<T>
     @Override
     public void onResponse(Call<T> call, Response<T> response)
     {
-        //if (!response.isSuccessful() && response.errorBody() != null)
-        if (response.errorBody() != null)
+        if (!response.isSuccessful() && response.errorBody() != null)
         {
             try
             {
-                Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
             } catch (IOException e)
             {
                 e.printStackTrace();
             }
+        }else{
+            try {
+                Toast.makeText(context, response.body().toString(), Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -49,6 +54,9 @@ public  class RetrofitCallback<T> implements Callback<T>
     @Override
     public void onFailure(Call<T> call, Throwable t)
     {
-        Toast.makeText(context, "FAILURE: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "*FAILURE: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        t.printStackTrace();
+        Toast.makeText(context, "ERROR : " + t.toString(), Toast.LENGTH_LONG);
+
     }
 }

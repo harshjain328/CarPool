@@ -5,6 +5,7 @@ package com.noobs.carpool.models;
  */
 public class SmsCodeResponse {
 
+
     private String request_id;
     private String status;
     private String error_text;
@@ -37,5 +38,10 @@ public class SmsCodeResponse {
 
     public void setErrorText(String error_text) {
         this.error_text = error_text;
+    }
+
+    @Override
+    public String toString(){
+        return request_id + ",\n" + status;
     }
 }
