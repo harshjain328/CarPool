@@ -22,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
     
-    public static String API_BASE_URL = "http://letachal.pe.hu/api/";
+    private final static String API_BASE_URL = "http://letachal.pe.hu/api/";
     
     public static Retrofit getClient(){
 

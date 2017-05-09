@@ -11,23 +11,25 @@ import retrofit2.Retrofit;
 /**
  * Created by deepak on 6/5/17.
  */
+
 public class Api {
 
 
     public static class Verification{
 
+        private static ApiClient.Verification verificationClient  = RetrofitClient.getClient().create(ApiClient.Verification.class);
+
         //send code to the given number
         public static Call<SmsCodeResponse> getCode(SmsCode smsCode, RetrofitCallback<SmsCodeResponse> resp){
-            ApiClient client  = RetrofitClient.getClient().create(ApiClient.class);
-            Call<SmsCodeResponse> call = client.getCode(smsCode);
+
+            Call<SmsCodeResponse> call = verificationClient.getCode(smsCode);
             call.enqueue(resp);
             return call;
         }
 
         //verifies code and return VerifySmsCodeResponse
         public static Call<VerifySmsCodeResponse> verifyCode(VerifySmsCode verifyCode, RetrofitCallback<VerifySmsCodeResponse> resp){
-            ApiClient client  = RetrofitClient.getClient().create(ApiClient.class);
-            Call<VerifySmsCodeResponse> call = client.verifyCode(verifyCode);
+            Call<VerifySmsCodeResponse> call = verificationClient.verifyCode(verifyCode);
             call.enqueue(resp);
             return call;
         }

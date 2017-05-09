@@ -14,10 +14,14 @@ import retrofit2.http.*;
  */
 public interface ApiClient {
 
-    @POST("SMS/getcode")
-    Call<SmsCodeResponse> getCode(@Body SmsCode smsCode);
+    interface Verification {
 
-    @POST("SMS/verifycode")
-    Call<VerifySmsCodeResponse> verifyCode(@Body VerifySmsCode verifyCode);
+        @POST("SMS/getcode")
+        Call<SmsCodeResponse> getCode(@Body SmsCode smsCode);
+
+        @POST("SMS/verifycode")
+        Call<VerifySmsCodeResponse> verifyCode(@Body VerifySmsCode verifyCode);
+
+    }
 
 }
