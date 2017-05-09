@@ -5,8 +5,13 @@
  */
 package com.noobs.carpool.api;
 
+import java.io.IOException;
+
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Request.Builder;
+import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -14,28 +19,31 @@ import retrofit2.converter.gson.GsonConverterFactory;
  *
  * @author deepak
  */
+
 public class RetrofitClient {
     
     public static String API_BASE_URL = "http://letachal.pe.hu/api/";
     
     public static Retrofit getClient(){
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-    
 
-        Retrofit.Builder builder =  
-            new Retrofit.Builder()
-                    .baseUrl(API_BASE_URL)
-                    .addConverterFactory(
-                        GsonConverterFactory.create()
-                    );
+        //OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
-        Retrofit retrofit =  
-            builder
-                .client(
-                    httpClient.build()
-                )
+        OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
+              @Override
+              public Response intercept(Chain chain) throws IOException {
+              Request newRequest  = chain.request().newBuilder()
+                //.addHeader("Authorization", "Bearer " + "")
                 .build();
-        return retrofit;
+              return chain.proceed(newRequest);
+              }
+        }).build();
+
+        return new Retrofit.Builder()
+                        .baseUrl(API_BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(httpClient)
+                        .build();
+
     }
     
 }
