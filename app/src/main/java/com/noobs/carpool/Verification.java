@@ -1,6 +1,7 @@
 package com.noobs.carpool;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.support.annotation.CallSuper;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,8 @@ import com.noobs.carpool.models.SmsCode;
 import com.noobs.carpool.models.SmsCodeResponse;
 import com.noobs.carpool.models.VerifySmsCode;
 import com.noobs.carpool.models.VerifySmsCodeResponse;
+import com.noobs.carpool.verification.SmsListener;
+import com.noobs.carpool.verification.SmsReader;
 
 import org.w3c.dom.Text;
 
@@ -26,13 +29,15 @@ import java.io.IOException;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class Verification extends AppCompatActivity  {
+public class Verification extends AppCompatActivity  implements SmsListener{
 
     Button btnGetCode, btnVerify;
     EditText txtNumber, txtVerify;
     TextView txtResult; // shows the verification process
     String requestId; // temporarily holds request_id sent by server for verification process
     final Context context = this;
+
+    SmsReader smsReader;
 
 
     @Override
@@ -50,6 +55,19 @@ public class Verification extends AppCompatActivity  {
 
         handleGetCode();
         handleVerification();
+
+
+        // instantiating and setting SmsReader(BroadcastReceiver)
+        smsReader =  new SmsReader(this);
+        smsReader.setSenderName("VERIFY");
+
+        //adding SmsReader
+        IntentFilter intentFilter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(smsReader, intentFilter);
+
+        //smsReader.fakeListener("START_FAKE-MESSAGE");
+
+
     }
 
 
@@ -85,7 +103,7 @@ public class Verification extends AppCompatActivity  {
         btnVerify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int verificationCode = Integer.parseInt(txtVerify.getText().toString().trim());
+                String verificationCode = txtVerify.getText().toString().trim();
                 VerifySmsCode verificationCodeObj = new VerifySmsCode(requestId, verificationCode);
                 Toast.makeText(context, "verifying with : " + verificationCodeObj, Toast.LENGTH_LONG).show();
                 Call<VerifySmsCodeResponse> verifySmsCodeCall = Api.Verification.verifyCode(verificationCodeObj, new RetrofitCallback<VerifySmsCodeResponse>(context) {
@@ -124,5 +142,13 @@ public class Verification extends AppCompatActivity  {
 
             }
         });
+    }
+
+    /* This will be called when SmsReader receives a new message
+        and code verification should be handled here.
+     */
+    @Override
+    public void onMessageReceive(String msgText) {
+        Toast.makeText(this, "Message-Received : " + msgText, Toast.LENGTH_LONG).show();
     }
 }

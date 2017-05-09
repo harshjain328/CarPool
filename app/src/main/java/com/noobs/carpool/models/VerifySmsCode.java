@@ -6,9 +6,9 @@ package com.noobs.carpool.models;
 public class VerifySmsCode {
 
     private String request_id;
-    private int code;
+    private String code;
 
-    public VerifySmsCode(String request_id, int code){
+    public VerifySmsCode(String request_id, String code){
         this.request_id = request_id;
         this.code = code;
     }
@@ -21,11 +21,11 @@ public class VerifySmsCode {
         this.request_id = request_id;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
