@@ -1,5 +1,7 @@
 package com.noobs.carpool.api;
 
+import com.noobs.carpool.models.Registration;
+import com.noobs.carpool.models.RegistrationResponse;
 import com.noobs.carpool.models.SmsCode;
 import com.noobs.carpool.models.SmsCodeResponse;
 import com.noobs.carpool.models.VerifySmsCode;
@@ -15,13 +17,16 @@ import retrofit2.http.*;
 public interface ApiClient {
 
     interface Verification {
-
         @POST("SMS/getcode")
         Call<SmsCodeResponse> getCode(@Body SmsCode smsCode);
 
         @POST("SMS/verifycode")
         Call<VerifySmsCodeResponse> verifyCode(@Body VerifySmsCode verifyCode);
+    }
 
+    interface Registration{
+        @POST("/register")
+        Call<RegistrationResponse> register(@Body Registration registration);
     }
 
 }
