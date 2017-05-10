@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.noobs.carpool.Verification;
 
 /**
  * Created by deepak on 9/5/17.
@@ -41,6 +40,7 @@ public class SmsReader extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.i("SMS", "Receiver-Called");
         Toast.makeText(context, "RECEIVER-CALLED", Toast.LENGTH_LONG).show();
         final Bundle bundle = intent.getExtras();
         if (bundle != null) {

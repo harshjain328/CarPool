@@ -21,13 +21,9 @@ import com.noobs.carpool.models.VerifySmsCode;
 import com.noobs.carpool.models.VerifySmsCodeResponse;
 import com.noobs.carpool.verification.SmsListener;
 import com.noobs.carpool.verification.SmsReader;
-
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-
 import retrofit2.Call;
 import retrofit2.Response;
+
 
 public class Verification extends AppCompatActivity  implements SmsListener{
 
@@ -63,12 +59,13 @@ public class Verification extends AppCompatActivity  implements SmsListener{
 
         //adding SmsReader
         IntentFilter intentFilter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+        intentFilter.setPriority(500);
         registerReceiver(smsReader, intentFilter);
 
-        //smsReader.fakeListener("START_FAKE-MESSAGE");
 
 
     }
+
 
 
     public void handleGetCode() {
