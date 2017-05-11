@@ -24,8 +24,8 @@ public interface ApiClient {
         Call<VerifySmsCodeResponse> verifyCode(@Body VerifySmsCode verifyCode);
     }
 
-    interface Registration{
-        @POST("/register")
+    interface Users{
+        @POST("user/register")
         Call<RegistrationResponse> register(@Body Registration registration);
     }
 

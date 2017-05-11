@@ -2,6 +2,7 @@ package com.noobs.carpool;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.noobs.carpool.api.Api;
+import com.noobs.carpool.api.ApiClient;
 import com.noobs.carpool.api.RetrofitCallback;
 import com.noobs.carpool.models.SmsCode;
 import com.noobs.carpool.models.SmsCodeResponse;
@@ -106,6 +108,7 @@ public class Verification extends AppCompatActivity  implements SmsListener{
     }
 
 
+
     /**
      * This function takes verification code as parameter and request_id from shared-preference
      * for verification process.
@@ -130,6 +133,11 @@ public class Verification extends AppCompatActivity  implements SmsListener{
                         if(status == 0){
                             txtResult.setTextColor(Color.GREEN);
                             txtResult.setText("Number Verified( status => "+status+")");
+
+                            //opening registration screen
+                            Intent registrationActivity = new Intent(context, RegistrationActivity.class);
+                            startActivity(registrationActivity);
+
                         }else{
                             txtResult.setTextColor(Color.RED);
                             txtResult.setText("Unable To Verify( status => "+status+")");
