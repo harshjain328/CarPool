@@ -8,12 +8,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,9 +23,7 @@ import android.widget.Toast;
 
 import com.noobs.carpool.api.Api;
 import com.noobs.carpool.api.RetrofitCallback;
-import com.noobs.carpool.models.Registration;
 import com.noobs.carpool.models.RegistrationResponse;
-import com.noobs.carpool.models.SmsCodeResponse;
 import com.noobs.carpool.utils.ImageUtil;
 
 import java.io.IOException;
@@ -91,7 +89,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 Log.i("BASE64", base64);
 
                 Toast.makeText(context, phone + ", " + username + bmp, Toast.LENGTH_LONG).show();
-                Registration registration = new Registration(username, phone, base64);
+                com.noobs.carpool.models.Registration registration = new com.noobs.carpool.models.Registration(username, phone, base64);
                 Api.Users.registerUser(registration, new RetrofitCallback<RegistrationResponse>(context){
                     @CallSuper
                     @Override
