@@ -30,7 +30,6 @@ public class TempRegistration extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    int flag=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +67,6 @@ public class TempRegistration extends AppCompatActivity {
             case R.id.next_button:
                 if (mViewPager.getCurrentItem() != mViewPager.getChildCount()) {
                     mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
-                    flag++;
                 }
         }
         return true;
