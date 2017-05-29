@@ -14,7 +14,7 @@ public class RegistrationResponse {
     @SerializedName("user_token")
     private String token;
 
-    @SerializedName("message")
+    @SerializedName("Message")
     private String message;
 
 
@@ -44,5 +44,8 @@ public class RegistrationResponse {
         this.message = msg;
     }
 
-
+    @Override
+    public String toString(){
+        return "Id : "+userId + ", \nToken : " + token + ", \nMessage : " + message;
+    }
 }

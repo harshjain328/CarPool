@@ -1,15 +1,15 @@
-package com.noobs.carpool.verification;
+package com.noobs.carpool.services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.noobs.carpool.services.listeners.SmsListener;
 
 
 /**
@@ -27,34 +27,32 @@ public class SmsReader extends BroadcastReceiver {
     }
 
     public static void setSenderName(final String sender){
-        senderName = senderName;
+        senderName = sender;
     }
 
     public SmsReader(){ }
 
     public SmsReader(SmsListener listener){
         msgListener = listener;
-        //msgListener.onMessageReceive("Start-Up");
     }
 
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("SMS", "Receiver-Called");
-        Toast.makeText(context, "RECEIVER-CALLED", Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, "RECEIVER-CALLED", Toast.LENGTH_LONG).show();
         final Bundle bundle = intent.getExtras();
         if (bundle != null) {
 
             final Object[] pdusArr = (Object[]) bundle.get("pdus");
-
-            for (int i = 0; i < pdusArr.length; i++) {
-
+            for (int i = 0; i < pdusArr.length; i++)
+            {
                 SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) pdusArr[i]);
-                String senderNum = currentMessage.getDisplayOriginatingAddress();
+                String senderAddress = currentMessage.getDisplayOriginatingAddress();
                 String message = currentMessage.getDisplayMessageBody();
-                Log.i("SMS : ", "senderNum: " + senderNum + " message: " + message);
+                Log.i("SMS : ", "senderNum: " + senderAddress + " message: " + message);
 
-                if (!TextUtils.isEmpty(senderName) && senderNum.contains(senderNum)) {
+                if (senderName != null && senderAddress.contains(senderName)) {
                     if (msgListener != null) {
                         msgListener.onMessageReceive(message); //calling listener
                     }

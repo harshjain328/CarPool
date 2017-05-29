@@ -1,12 +1,16 @@
 package com.noobs.carpool.api;
 
+import com.noobs.carpool.models.DirectionRequest;
+import com.noobs.carpool.models.DirectionRequestByLatLng;
+import com.noobs.carpool.models.Registration;
+import com.noobs.carpool.models.RegistrationResponse;
 import com.noobs.carpool.models.SmsCode;
 import com.noobs.carpool.models.SmsCodeResponse;
 import com.noobs.carpool.models.VerifySmsCode;
 import com.noobs.carpool.models.VerifySmsCodeResponse;
+import com.noobs.carpool.utils.MapModels;
 
 import retrofit2.Call;
-import retrofit2.Retrofit;
 
 /**
  * Created by deepak on 6/5/17.
@@ -34,6 +38,29 @@ public class Api {
             return call;
         }
 
+    }
+
+    public static class Users{
+
+        private static ApiClient.Users usersClient  = RetrofitClient.getClient().create(ApiClient.Users.class);
+
+        public static Call<RegistrationResponse> registerUser(final Registration registration, RetrofitCallback<RegistrationResponse> resp){
+            Call<RegistrationResponse> call = usersClient.register(registration);
+            call.enqueue(resp);
+            return call;
+        }
+
+    }
+
+    public static class Maps{
+        private static ApiClient.Maps mapsClient  = RetrofitClient.getClient().create(ApiClient.Maps.class);
+
+        public static Call<MapModels.DirectionResults> getRoutes(final DirectionRequest req, RetrofitCallback<MapModels.DirectionResults> resp){
+            //Call<MapModels.DirectionResults> call = mapsClient.getRoute(70.56 + ", " + 23.80, 71.80 + ", " + 23.70);
+            Call<MapModels.DirectionResults> call = mapsClient.getRoute(req.getSource(), req.getDestination());
+            call.enqueue(resp);
+            return call;
+        }
     }
 
 

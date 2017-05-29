@@ -1,9 +1,13 @@
 package com.noobs.carpool;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.annotation.CallSuper;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,8 +23,8 @@ import com.noobs.carpool.models.SmsCode;
 import com.noobs.carpool.models.SmsCodeResponse;
 import com.noobs.carpool.models.VerifySmsCode;
 import com.noobs.carpool.models.VerifySmsCodeResponse;
-import com.noobs.carpool.verification.SmsListener;
-import com.noobs.carpool.verification.SmsReader;
+import com.noobs.carpool.services.listeners.SmsListener;
+import com.noobs.carpool.services.SmsReader;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -62,8 +66,6 @@ public class Verification extends AppCompatActivity  implements SmsListener{
         intentFilter.setPriority(500);
         registerReceiver(smsReader, intentFilter);
 
-
-
     }
 
 
@@ -83,6 +85,13 @@ public class Verification extends AppCompatActivity  implements SmsListener{
                             //fetching request_id from response
                             requestId = response.body().getRequestId();
                             txtResult.setText("Code Sent( request_id => "+requestId+")");
+
+                            // Storing request_id in shared-preference for later verification
+                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putString("request_id", requestId);
+                            editor.apply();
+
                             Toast.makeText(context, "Successful : "+response.body().toString(), Toast.LENGTH_LONG).show();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -96,56 +105,76 @@ public class Verification extends AppCompatActivity  implements SmsListener{
         });
     }
 
+
+    /**
+     * This function takes verification code as parameter and request_id from shared-preference
+     * for verification process.
+     * @param code to verify
+     */
+    public void verifyCode(String code){
+        //String verificationCode = txtVerify.getText().toString().trim();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String request_id = preferences.getString("request_id", "None");
+
+        VerifySmsCode verificationCodeObj = new VerifySmsCode(request_id, code);
+        Toast.makeText(context, "verifying with : " + verificationCodeObj, Toast.LENGTH_LONG).show();
+        Call<VerifySmsCodeResponse> verifySmsCodeCall = Api.Verification.verifyCode(verificationCodeObj, new RetrofitCallback<VerifySmsCodeResponse>(context) {
+
+            @CallSuper
+            @Override
+            public void onResponse(Call<VerifySmsCodeResponse> call, Response<VerifySmsCodeResponse> response) {
+                super.onResponse(call, response);
+                if (response.isSuccessful()) {
+                    try {
+                        int status = Integer.parseInt(response.body().getStatus());
+                        if(status == 0){
+                            txtResult.setTextColor(Color.GREEN);
+                            txtResult.setText("Number Verified( status => "+status+")");
+                        }else{
+                            txtResult.setTextColor(Color.RED);
+                            txtResult.setText("Unable To Verify( status => "+status+")");
+                        }
+
+                        Toast.makeText(context, response.body().toString(), Toast.LENGTH_LONG).show();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
+                        System.out.print(response.errorBody().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
+    }
+
     public void handleVerification() {
         btnVerify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String verificationCode = txtVerify.getText().toString().trim();
-                VerifySmsCode verificationCodeObj = new VerifySmsCode(requestId, verificationCode);
-                Toast.makeText(context, "verifying with : " + verificationCodeObj, Toast.LENGTH_LONG).show();
-                Call<VerifySmsCodeResponse> verifySmsCodeCall = Api.Verification.verifyCode(verificationCodeObj, new RetrofitCallback<VerifySmsCodeResponse>(context) {
-
-                    @CallSuper
-                    @Override
-                    public void onResponse(Call<VerifySmsCodeResponse> call, Response<VerifySmsCodeResponse> response) {
-                        super.onResponse(call, response);
-                        if (response.isSuccessful()) {
-                            try {
-                                int status = Integer.parseInt(response.body().getStatus());
-                                if(status == 0){
-                                    txtResult.setTextColor(Color.GREEN);
-                                    txtResult.setText("Number Verified( status => "+status+")");
-                                }else{
-                                    txtResult.setTextColor(Color.RED);
-                                    txtResult.setText("Unable To Verify( status => "+status+")");
-                                }
-
-                                Toast.makeText(context, response.body().toString(), Toast.LENGTH_LONG).show();
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            try {
-                                Toast.makeText(context, response.errorBody().string(), Toast.LENGTH_LONG).show();
-                                System.out.print(response.errorBody().toString());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }
-                });
-
+                verifyCode(verificationCode);
             }
         });
     }
+
 
     /* This will be called when SmsReader receives a new message
         and code verification should be handled here.
      */
     @Override
     public void onMessageReceive(String msgText) {
-        Toast.makeText(this, "Message-Received : " + msgText, Toast.LENGTH_LONG).show();
+
+        // message body contains to number(code & validation time), so here
+        // I'm extracting first number(verification code) from message body
+        String verificationCode = msgText.replaceAll("[^-?0-9]+", " ").trim().split(" ")[0];
+        verifyCode(verificationCode);
+
+
     }
 }

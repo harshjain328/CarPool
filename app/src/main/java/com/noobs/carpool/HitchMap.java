@@ -2,16 +2,16 @@ package com.noobs.carpool;
 
 import android.app.Dialog;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,9 +28,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.noobs.carpool.api.Api;
+import com.noobs.carpool.api.RetrofitCallback;
+import com.noobs.carpool.models.DirectionRequestByLatLng;
+import com.noobs.carpool.models.DirectionRequestByPlace;
+import com.noobs.carpool.utils.MapModels;
+import com.noobs.carpool.utils.RouteDecode;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,LocationListener, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
@@ -49,7 +59,13 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
         }
         loc=(Button)findViewById(R.id.btnCurLoc);
         loc.setOnClickListener(this);
+
+        // testing route creation
+        createRouteBetween("ahmedabad", "rajkot");
+
     }
+
+
 
     //points to the specified location
 
@@ -148,6 +164,7 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnCurLoc:
+                /*
                 EditText locSearch=(EditText)findViewById(R.id.edCurLoc);
                 String location=locSearch.getText().toString();
 
@@ -168,8 +185,66 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
                 if(des!=null)
                     des.remove();
 
-                des=map.addMarker(options);
+                des=map.addMarker(options); */
+
+
                 break;
         }
     }
+
+
+
+    /*
+        Testing route creation
+     */
+    private void createRouteBetween(String source, String destination) {
+        Api.Maps.getRoutes(new DirectionRequestByPlace(source, destination), new RetrofitCallback<MapModels.DirectionResults>(this){
+            @CallSuper
+            @Override
+            public void onResponse(Call<MapModels.DirectionResults> call, Response<MapModels.DirectionResults> response) {
+                super.onResponse(call, response);
+                ArrayList<LatLng> routelist = new ArrayList<LatLng>();
+                if (response.body().getRoutes().size() > 0) {
+                    ArrayList<LatLng> decodelist;
+                    MapModels.Route routeA = response.body().getRoutes().get(0);
+                    if (routeA.getLegs().size() > 0) {
+                        List<MapModels.Steps> steps = routeA.getLegs().get(0).getSteps();
+                        MapModels.Steps step;
+                        MapModels.Location location;
+                        String polyline;
+                        for (int i = 0; i < steps.size(); i++) {
+                            step = steps.get(i);
+                            location = step.getStart_location();
+                            routelist.add(new LatLng(location.getLat(), location.getLng()));
+
+                            polyline = step.getPolyline().getPoints();
+                            decodelist = RouteDecode.decodePoly(polyline);
+                            routelist.addAll(decodelist);
+                            location = step.getEnd_location();
+                            routelist.add(new LatLng(location.getLat(), location.getLng()));
+                        }
+                    }
+                }
+                if (routelist.size() > 0) {
+                    PolylineOptions rectLine = new PolylineOptions().width(10).color(
+                            Color.RED);
+
+                    for (int i = 0; i < routelist.size(); i++) {
+                        rectLine.add(routelist.get(i));
+                    }
+                    // Adding route on the map
+                    map.addPolyline(rectLine);
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .title("Destination");
+                    //markerOptions.position(toPosition);
+                    markerOptions.draggable(true);
+                    //map.addMarker(markerOptions);
+
+                }
+            }
+        });
+
+    }
+
+
 }
