@@ -34,10 +34,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.noobs.carpool.api.Api;
 import com.noobs.carpool.api.RetrofitCallback;
+import com.noobs.carpool.models.DirectionRequest;
 import com.noobs.carpool.models.DirectionRequestByLatLng;
 import com.noobs.carpool.models.DirectionRequestByPlace;
 import com.noobs.carpool.utils.MapModels;
 import com.noobs.carpool.utils.RouteDecode;
+import com.noobs.carpool.utils.Util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,7 +67,8 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
         loc.setOnClickListener(this);
 
         // testing route creation
-        createRouteBetween("ahmedabad", "rajkot");
+        //createRouteBetween(new DirectionRequestByPlace("ahmedabad", "delhi, india"));
+        createRouteBetween(new DirectionRequestByLatLng(23.04451F,72.5203356F, 23.6F, 72));
 
     }
 
@@ -199,53 +202,35 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
 
 
     /*
-        Testing route creation
+        This can accept either DirectionRequestByPlace or DirectionRequestByLatLng
+        because both are subclass of DirectionRequest
      */
-    private void createRouteBetween(final String source, final String destination) {
-        Api.Maps.getRoutes(new DirectionRequestByPlace(source, destination), new RetrofitCallback<MapModels.DirectionResults>(this){
+    private void createRouteBetween(final DirectionRequest directionRequest) {
+        Api.Maps.getRoutes(directionRequest, new RetrofitCallback<MapModels.DirectionResults>(this){
             @CallSuper
             @Override
             public void onResponse(Call<MapModels.DirectionResults> call, Response<MapModels.DirectionResults> response) {
                 super.onResponse(call, response);
-                ArrayList<LatLng> routelist = new ArrayList<LatLng>();
-                if (response.body().getRoutes().size() > 0) {
-                    ArrayList<LatLng> decodelist;
-                    MapModels.Route routeA = response.body().getRoutes().get(0);
-                    if (routeA.getLegs().size() > 0) {
-                        List<MapModels.Steps> steps = routeA.getLegs().get(0).getSteps();
-                        MapModels.Steps step;
-                        MapModels.Location location;
-                        String polyline;
-                        for (int i = 0; i < steps.size(); i++) {
-                            step = steps.get(i);
-                            location = step.getStart_location();
-                            routelist.add(new LatLng(location.getLat(), location.getLng()));
 
-                            polyline = step.getPolyline().getPoints();
-                            decodelist = RouteDecode.decodePoly(polyline);
-                            routelist.addAll(decodelist);
-                            location = step.getEnd_location();
-                            routelist.add(new LatLng(location.getLat(), location.getLng()));
-                        }
-                    }
-                }
+                List<LatLng> routelist = Util.decodeRouteFrom(response.body());
+
                 if (routelist.size() > 0) {
-                    PolylineOptions rectLine = new PolylineOptions().width(14).color(
-                            Color.BLUE);
+                    PolylineOptions rectLine = new PolylineOptions().width(14).color(Color.BLUE);
 
                     for (int i = 0; i < routelist.size(); i++) {
                         rectLine.add(routelist.get(i));
                     }
+
                     // Adding route on the map
                     map.addPolyline(rectLine);
 
                     MarkerOptions sourceMarker = new MarkerOptions()
                             .position(routelist.get(0))
-                            .title(source);
+                            .title(directionRequest.getSource());
 
                     MarkerOptions destMarker = new MarkerOptions()
                             .position(routelist.get(routelist.size()-1))
-                            .title(destination);
+                            .title(directionRequest.getDestination());
 
                     //markerOptions.draggable(true);
                     map.addMarker(sourceMarker);

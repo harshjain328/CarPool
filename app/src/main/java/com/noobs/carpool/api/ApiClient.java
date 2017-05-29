@@ -36,4 +36,9 @@ public interface ApiClient {
         Call<MapModels.DirectionResults> getRoute(@Query("origin") String origin, @Query("destination") String destination);
     }
 
+    interface Ride{
+        //@POST("/ride")
+        //Call<RideResponse> registerRide(@BODY RideResponse ride){ }
+    }
+
 }
