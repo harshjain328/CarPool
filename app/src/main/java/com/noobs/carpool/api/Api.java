@@ -64,4 +64,14 @@ public class Api {
     }
 
 
-}
+        /*private static ApiClient.Users usersClient  = RetrofitClient.getClient().create(ApiClient.Users.class);
+
+        public static Call<RegistrationResponse> registerUser(final Registration registration, RetrofitCallback<RegistrationResponse> resp){
+            Call<RegistrationResponse> call = usersClient.register(registration);
+            call.enqueue(resp);
+            return call;
+        }*/
+
+    }
+
+

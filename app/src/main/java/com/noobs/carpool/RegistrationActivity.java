@@ -8,12 +8,12 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +26,7 @@ import com.noobs.carpool.api.RetrofitCallback;
 import com.noobs.carpool.models.Registration;
 import com.noobs.carpool.models.RegistrationResponse;
 import com.noobs.carpool.models.SmsCodeResponse;
+import com.noobs.carpool.models.RegistrationResponse;
 import com.noobs.carpool.utils.ImageUtil;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class RegistrationActivity extends AppCompatActivity {
-    
+
     private EditText txtPhoneNo, txtUsername;
     private Button btnUploadImage, btnCaptureImage, btnRegister;
     private ImageView imgProfilePic;
@@ -47,14 +48,14 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        
+
         txtPhoneNo = (EditText) findViewById(R.id.txtPhoneNo);
         txtUsername = (EditText) findViewById(R.id.txtUsername);
-        
+
         btnCaptureImage = (Button) findViewById(R.id.btnCaptureImage);
-        
+
         imgProfilePic = (ImageView) findViewById(R.id.imgProfilePic);
-        
+
         btnRegister = (Button) findViewById(R.id.btnRegister);
         btnUploadImage = (Button) findViewById(R.id.btnUploadImage);
         btnCaptureImage = (Button) findViewById(R.id.btnCaptureImage);
@@ -92,6 +93,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 Toast.makeText(context, phone + ", " + username + bmp, Toast.LENGTH_LONG).show();
                 Registration registration = new Registration(username, phone, base64);
+
                 Api.Users.registerUser(registration, new RetrofitCallback<RegistrationResponse>(context){
                     @CallSuper
                     @Override
@@ -106,6 +108,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         dialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                   dialog.cancel();
+                                dialog.cancel();
                             }
                         });
                         AlertDialog alert = dialogBuilder.create();

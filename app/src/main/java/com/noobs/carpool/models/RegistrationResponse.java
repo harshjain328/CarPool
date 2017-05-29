@@ -49,3 +49,4 @@ public class RegistrationResponse {
         return "Id : "+userId + ", \nToken : " + token + ", \nMessage : " + message;
     }
 }
+
