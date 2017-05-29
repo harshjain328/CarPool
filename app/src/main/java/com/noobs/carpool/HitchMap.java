@@ -3,6 +3,8 @@ package com.noobs.carpool;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -36,6 +39,7 @@ import com.noobs.carpool.models.DirectionRequestByPlace;
 import com.noobs.carpool.utils.MapModels;
 import com.noobs.carpool.utils.RouteDecode;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,7 +168,7 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnCurLoc:
-                /*
+
                 EditText locSearch=(EditText)findViewById(R.id.edCurLoc);
                 String location=locSearch.getText().toString();
 
@@ -185,7 +189,7 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
                 if(des!=null)
                     des.remove();
 
-                des=map.addMarker(options); */
+                des=map.addMarker(options);
 
 
                 break;
@@ -197,7 +201,7 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
     /*
         Testing route creation
      */
-    private void createRouteBetween(String source, String destination) {
+    private void createRouteBetween(final String source, final String destination) {
         Api.Maps.getRoutes(new DirectionRequestByPlace(source, destination), new RetrofitCallback<MapModels.DirectionResults>(this){
             @CallSuper
             @Override
@@ -226,19 +230,26 @@ public class HitchMap extends AppCompatActivity implements OnMapReadyCallback, G
                     }
                 }
                 if (routelist.size() > 0) {
-                    PolylineOptions rectLine = new PolylineOptions().width(10).color(
-                            Color.RED);
+                    PolylineOptions rectLine = new PolylineOptions().width(14).color(
+                            Color.BLUE);
 
                     for (int i = 0; i < routelist.size(); i++) {
                         rectLine.add(routelist.get(i));
                     }
                     // Adding route on the map
                     map.addPolyline(rectLine);
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .title("Destination");
-                    //markerOptions.position(toPosition);
-                    markerOptions.draggable(true);
-                    //map.addMarker(markerOptions);
+
+                    MarkerOptions sourceMarker = new MarkerOptions()
+                            .position(routelist.get(0))
+                            .title(source);
+
+                    MarkerOptions destMarker = new MarkerOptions()
+                            .position(routelist.get(routelist.size()-1))
+                            .title(destination);
+
+                    //markerOptions.draggable(true);
+                    map.addMarker(sourceMarker);
+                    map.addMarker(destMarker);
 
                 }
             }

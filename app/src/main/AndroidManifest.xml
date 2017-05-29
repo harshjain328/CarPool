@@ -30,11 +30,10 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CAMERA" />
-<<<<<<< HEAD
+
     <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
-=======
+
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
->>>>>>> 163c9cf5d6dcadf5c9aef4f1125e603662b0e372
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -68,16 +67,14 @@
         <activity android:name=".Verification">
 
         </activity>
-        <activity android:name=".RegistrationActivity" />
 
-<<<<<<< HEAD
         <activity android:name=".RegistrationActivity">
 
         </activity>
 
         <!-- <receiver android:name=".services.SmsReader">
-=======
-        <!--
+
+
         <receiver android:name=".services.SmsReader">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
@@ -95,11 +92,10 @@
             android:name=".TempRegistration"
             android:label="@string/title_activity_temp_registration"
             android:theme="@style/AppTheme.NoActionBar">
->>>>>>> 163c9cf5d6dcadf5c9aef4f1125e603662b0e372
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
             </intent-filter>
-        </receiver> -->
+        </activity>
 
         <receiver android:name=".services.CallReceiverTest">
             <intent-filter>
